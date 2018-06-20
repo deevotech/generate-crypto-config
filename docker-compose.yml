@@ -1,0 +1,25 @@
+version: '2'
+
+networks:
+  bccs:
+
+services:
+
+  rca-org0:
+    container_name: rca-org0
+    image: startnetwork/test
+    command: /bin/bash -c '/test.sh 2>&1 | tee /data/logs/test.logs'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca-org0
+      - FABRIC_CA_SERVER_CSR_HOSTS=rca-org0
+      - FABRIC_CA_SERVER_DEBUG=true
+      - BOOTSTRAP_USER_PASS=rca-org0-admin:rca-org0-adminpw
+      - TARGET_CERTFILE=/data/org0-ca-cert.pem
+      - FABRIC_ORGS=org0 org1 org2
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - bccs
