@@ -132,7 +132,7 @@ $GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-clie
 
 local COUNT=1
 while [[ "$COUNT" -le $NUM_PEERS ]]; do
-   NUM={$COUNT}
+   NUM=$COUNT
    PEER_HOST=peer${NUM}-${ORG}
    PEER_NAME=peer${NUM}-${ORG}
    PEER_PASS=${PEER_NAME}pw
@@ -167,16 +167,17 @@ while [[ "$COUNT" -le $NUM_PEERS ]]; do
       # Point the non-anchor peers to the anchor peer, which is always the 1st peer
       export CORE_PEER_GOSSIP_BOOTSTRAP=peer1-${ORG}:7051
    fi
+   echo $PEER_NAME
    export ORDERER_CONN_ARGS="$ORDERER_PORT_ARGS --keyfile $CORE_PEER_TLS_CLIENTKEY_FILE --certfile $CORE_PEER_TLS_CLIENTCERT_FILE"
  	log "Registering $PEER_NAME with $CA_NAME"
- 	$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $PEER_NAME --id.secret $PEER_PASS --id.type peer
+ 	$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $PEER_NAME --id.secret $PEER_PASS --id.type peer -u "https://"$CA_ADMIN_USER_PASS"@localhost:7057"
  	COUNT=$((COUNT+1))
   done
 log "Registering admin identity with $CA_NAME"
 # The admin identity has the "admin" attribute which is added to ECert by default
-$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "hf.Registrar.Roles=client,hf.Registrar.Attributes=*,hf.Revoker=true,hf.GenCRL=true,admin=true:ecert,abac.init=true:ecert"
+$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $ADMIN_NAME --id.secret $ADMIN_PASS --id.attrs "hf.Registrar.Roles=client,hf.Registrar.Attributes=*,hf.Revoker=true,hf.GenCRL=true,admin=true:ecert,abac.init=true:ecert" -u "https://"$CA_ADMIN_USER_PASS"@localhost:7057"
 log "Registering user identity with $CA_NAME"
-$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $USER_NAME --id.secret $USER_PASS
+$GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-client register -d --id.name $USER_NAME --id.secret $USER_PASS -u "https://"$CA_ADMIN_USER_PASS"@localhost:7057"
 
 ## getcert
 ## initOrgVars $ORG

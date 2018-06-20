@@ -132,7 +132,7 @@ $GOPATH/src/github.com/hyperledger/fabric-ca/cmd/fabric-ca-client/fabric-ca-clie
 
 local COUNT=1
 while [[ "$COUNT" -le $NUM_PEERS ]]; do
-   NUM={$COUNT}
+   NUM=$COUNT
    PEER_HOST=peer${NUM}-${ORG}
    PEER_NAME=peer${NUM}-${ORG}
    PEER_PASS=${PEER_NAME}pw
